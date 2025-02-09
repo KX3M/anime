@@ -1,47 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Download Anime</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+            line-height: 1.6;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .anime-details {
+            text-align: center;
+            padding: 50px 0;
+        }
+        .anime-details img {
+            width: 300px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .anime-details h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .anime-details p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        .download-button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(45deg, #ff7e5f, #feb47b);
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: glow 2s infinite;
+        }
+        .download-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 126, 95, 0.8);
+        }
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px rgba(255, 126, 95, 0.6); }
+            50% { box-shadow: 0 0 20px rgba(255, 126, 95, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(255, 126, 95, 0.6); }
+        }
+    </style>
 </head>
 <body>
-    <div id="animeDetails">
-        <!-- एनीमे की डिटेल्स यहाँ लोड होंगी -->
+    <div class="container">
+        <div class="anime-details" id="animeDetails">
+            <!-- यहाँ एनीमे की डिटेल्स लोड होंगी -->
+        </div>
     </div>
-    <button onclick="handleDownload()">Download Now</button>
 
     <script>
-        async function loadDetails() {
-            const animeId = new URLSearchParams(window.location.search).get('id');
-            const response = await fetch(`https://gogoanime.herokuapp.com/anime-details/${animeId}`);
+        // URL से एनीमे ID निकालें
+        const animeId = new URLSearchParams(window.location.search).get('id');
+
+        // एनीमे डिटेल्स लोड करें
+        async function loadAnimeDetails() {
+            const response = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
             const data = await response.json();
-            
+            const anime = data.data;
+
             document.getElementById('animeDetails').innerHTML = `
-                <h1>${data.animeTitle}</h1>
-                <img src="${data.animeImg}">
-                <p>${data.synopsis}</p>
+                <img src="${anime.images.jpg.large_image_url}" alt="${anime.title}">
+                <h1>${anime.title}</h1>
+                <p>${anime.synopsis}</p>
+                <button class="download-button" onclick="downloadAnime()">Download Now</button>
             `;
         }
 
-        async function handleDownload() {
-            // शॉर्टनर लिंक को API से प्राप्त करें
-            const shortenerResponse = await fetch('https://api.short.io/links', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'YOUR_SHORTENER_API_KEY'
-                },
-                body: JSON.stringify({
-                    originalURL: 'REAL_DOWNLOAD_LINK_FROM_API',
-                    domain: 'short.io'
-                })
-            });
-            
-            const shortLink = await shortenerResponse.json();
-            window.location.href = shortLink.shortURL; // शॉर्टनर पर रीडायरेक्ट
+        // डाउनलोड फंक्शन
+        function downloadAnime() {
+            alert("Download will start soon!");
         }
 
-        // पेज लोड होते ही डिटेल्स दिखाएँ
-        loadDetails();
+        // पेज लोड होते ही डिटेल्स लोड करें
+        loadAnimeDetails();
     </script>
 </body>
 </html>
